@@ -54,7 +54,8 @@ final class StorageSettingsFactory {
                         config.getString(s3 + "access-key"),
                         config.getString(s3 + "secret-key"),
                         config.getString(s3 + "region"),
-                        config.getString(s3 + "bucket")),
+                        config.getString(s3 + "bucket"),
+                        Objects.requireNonNullElse(config.getString(s3 + "path"), "downloads/")),
                 new Storage.Sftp(
                         config.getString(sftp + "host"),
                         config.getInt(sftp + "port", 22),

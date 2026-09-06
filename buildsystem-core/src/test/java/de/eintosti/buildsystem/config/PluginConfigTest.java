@@ -284,6 +284,7 @@ class PluginConfigTest {
                     secret-key: "MYSECRETKEY"
                     region: "eu-central-1"
                     bucket: "my-bucket"
+                    path: "downloads/"
                 """);
 
         assertEquals(PluginConfig.Storage.Type.S3, cfg.world().backup().storage());
@@ -294,6 +295,7 @@ class PluginConfigTest {
         assertEquals("MYSECRETKEY", s3.secretKey());
         assertEquals("eu-central-1", s3.region());
         assertEquals("my-bucket", s3.bucket());
+        assertEquals("downloads/", s3.path());
     }
 
     // -----------------------------------------------------------------------

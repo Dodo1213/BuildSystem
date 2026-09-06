@@ -50,10 +50,10 @@ final class S3DownloadDelivery implements DownloadDelivery {
     /**
      * Where uploads live in the bucket, kept apart from the backups so a lifecycle rule can treat them differently.
      */
-    private static final String KEY_PREFIX = "downloads/";
 
     private final S3Client s3;
     private final Logger logger;
+    private final String keyPrefix;
 
     /**
      * The uploaded objects and when their links die. An object outlives the request that made it, so something has to
@@ -61,9 +61,10 @@ final class S3DownloadDelivery implements DownloadDelivery {
      */
     private final Map<String, Long> uploads = new ConcurrentHashMap<>();
 
-    private S3DownloadDelivery(S3Client s3, Logger logger) {
+    private S3DownloadDelivery(S3Client s3, Logger logger, String keyPrefix) {
         this.s3 = s3;
         this.logger = logger;
+        this.keyPrefix = normalizePrefix(keyPrefix);
     }
 
     /**
@@ -88,8 +89,9 @@ final class S3DownloadDelivery implements DownloadDelivery {
         String url = settings.url();
         S3Client s3 = new S3Client(
                 accessKey, secretKey, settings.region(), settings.bucket(), isBlank(url) ? null : URI.create(url));
+        String downloadPath = isBlank(settings.path()) ? "downloads/" : settings.path();
         logger.info("World downloads are served as pre-signed links from bucket '" + settings.bucket() + "'");
-        S3DownloadDelivery delivery = new S3DownloadDelivery(s3, logger);
+        S3DownloadDelivery delivery = new S3DownloadDelivery(s3, logger, downloadPath);
         background.execute(delivery::clearLeftovers);
         return delivery;
     }
@@ -103,7 +105,7 @@ final class S3DownloadDelivery implements DownloadDelivery {
      */
     private void clearLeftovers() {
         try {
-            s3.list(KEY_PREFIX).forEach(object -> delete(object.key()));
+            s3.list(keyPrefix).forEach(object -> delete(object.key()));
         } catch (IOException e) {
             logger.log(Level.WARNING, "Failed to clear leftover world downloads from the bucket", e);
         }
@@ -115,7 +117,7 @@ final class S3DownloadDelivery implements DownloadDelivery {
         long total = Files.size(archive);
         // The signed URL is the secret, not the key. A directory per upload only keeps two exports of the same world
         // from colliding.
-        String key = KEY_PREFIX + UUID.randomUUID() + "/" + fileName;
+        String key = keyPrefix + UUID.randomUUID() + "/" + fileName;
 
         try {
             s3.putFile(key, archive, uploaded -> progress.update(uploaded, total));
@@ -184,5 +186,9 @@ final class S3DownloadDelivery implements DownloadDelivery {
 
     private static boolean isBlank(@Nullable String value) {
         return value == null || value.isBlank();
+    }
+
+    private static String normalizePrefix(String prefix) {
+        return prefix.endsWith("/") ? prefix : prefix + "/";
     }
 }

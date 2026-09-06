@@ -92,7 +92,9 @@ public record PluginConfig(Settings settings, Storage storage, World world, Fold
                 @Nullable String accessKey,
                 @Nullable String secretKey,
                 @Nullable String region,
-                @Nullable String bucket) {
+                @Nullable String bucket,
+                @Nullable String path
+                ) {
 
             /**
              * {@return the access key, preferring {@code AWS_ACCESS_KEY_ID}} Lets operators keep the secret out of
@@ -114,13 +116,14 @@ public record PluginConfig(Settings settings, Storage storage, World world, Fold
              */
             @Override
             public String toString() {
-                return "S3[url=%s, accessKey=%s, secretKey=%s, region=%s, bucket=%s]"
+                return "S3[url=%s, accessKey=%s, secretKey=%s, region=%s, bucket=%s, path=%s]"
                         .formatted(
                                 url,
                                 accessKey == null ? null : "***",
                                 secretKey == null ? null : "***",
                                 region,
-                                bucket);
+                                bucket,
+                                path);
             }
         }
 

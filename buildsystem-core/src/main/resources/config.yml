@@ -134,7 +134,9 @@ storage:
     access-key: YOUR_ACCESS_KEY
     secret-key: YOUR_SECRET_KEY
     region: eu-central-1
-    bucket: buildsystem-backups
+    bucket: buildsystem-backups    
+    # Where world downloads are stored inside the bucket. Backups can use a different path.
+    path: downloads/
   sftp:
     host: YOUR_SFTP_HOST
     port: 22
