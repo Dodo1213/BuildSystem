@@ -50,8 +50,8 @@ final class S3DownloadDelivery implements DownloadDelivery {
     /**
      * Where uploads live in the bucket, kept apart from the backups so a lifecycle rule can treat them differently.
      */
-
     private final S3Client s3;
+
     private final Logger logger;
     private final String keyPrefix;
 

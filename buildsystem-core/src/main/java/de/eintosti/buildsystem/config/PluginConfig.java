@@ -93,8 +93,7 @@ public record PluginConfig(Settings settings, Storage storage, World world, Fold
                 @Nullable String secretKey,
                 @Nullable String region,
                 @Nullable String bucket,
-                @Nullable String path
-                ) {
+                @Nullable String path) {
 
             /**
              * {@return the access key, preferring {@code AWS_ACCESS_KEY_ID}} Lets operators keep the secret out of
